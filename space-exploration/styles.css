@@ -1,0 +1,72 @@
+canvas {
+    margin: 11px;
+    border: 2px black solid;
+    background: rgb(30, 30, 30);
+}
+
+body {
+    background: rgb(10, 10, 10);
+}
+
+#canvasBackDiv {
+    padding: 3px;
+    width: max-content;
+    border-radius: 1em;
+    background: linear-gradient(to right, #5800E2, #FF00E6);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p {
+    max-width: 100%;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p a {
+    background: #12c2e9;
+    /* fallback for old browsers */
+    background: -webkit-linear-gradient(to left, #f64f59, #c471ed, #12c2e9);
+    /* Chrome 10-25, Safari 5.1-6 */
+    background: linear-gradient(to left, #f64f59, #c471ed, #12c2e9);
+    /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-family: sans-serif;
+    text-decoration: none;
+    width: max-content;
+}
+
+h1,
+h2 {
+    background: #12c2e9;
+    background: -webkit-linear-gradient(45deg, #5800E2, #FF00E6);
+    background: linear-gradient(45deg, #5800E2, #FF00E6);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+p {
+    color: white;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+@font-face {
+    font-family: 'Ken Vector Future';
+    src: url('./fonts/kenvector_future.ttf') format("truetype");
+}
+
+@font-face {
+    font-family: 'Ken Vector Future Thin';
+    src: url('./fonts/kenvector_future_thin.ttf') format("truetype");
+}
