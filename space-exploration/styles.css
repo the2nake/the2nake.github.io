@@ -1,3 +1,31 @@
+/* Credit not needed but is appreciated.
+   styles.css by Thuong */
+
+@font-face {
+    font-family: 'Ken Vector Future';
+    src: url('./fonts/kenvector_future2.ttf') format("truetype");
+}
+
+@font-face {
+    font-family: 'Ken Vector Future Thin';
+    src: url('./fonts/kenvector_future_thin2.ttf') format("truetype");
+}
+
+header,
+.footer {
+    position: absolute;
+}
+
+header{
+    max-width: calc(100% - 36px);
+}
+header h1 {
+    margin-bottom: 0;
+}
+header p {
+    margin-top: 0;
+}
+
 canvas {
     margin: 11px;
     border: 2px black solid;
@@ -5,7 +33,10 @@ canvas {
 }
 
 body {
+    margin-top: 0;
+    margin-left: 0;
     background: rgb(10, 10, 10);
+    overflow: hidden;
 }
 
 #canvasBackDiv {
@@ -41,7 +72,7 @@ p a {
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
-    font-family: sans-serif;
+    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
     text-decoration: none;
     width: max-content;
 }
@@ -54,19 +85,74 @@ h2 {
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
+    font-family: "Ken Vector Future Thin";
 }
 
 p {
     color: white;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
 }
 
-@font-face {
-    font-family: 'Ken Vector Future';
-    src: url('./fonts/kenvector_future.ttf') format("truetype");
+#screen-overflow {
+    overflow: hidden;
+    z-index: 1;
+    top: 0;
+    left: 0;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: #12c2e9;
+    /* fallback for old browsers */
+    background: -webkit-linear-gradient(to right, #f77d85, #cc94e7, #56d1ec);
+    /* Chrome 10-25, Safari 5.1-6 */
+    background: linear-gradient(to right, #f77d85, #cc94e7, #56d1ec);
 }
 
-@font-face {
-    font-family: 'Ken Vector Future Thin';
-    src: url('./fonts/kenvector_future_thin.ttf') format("truetype");
+#loadbar-gradient {
+    z-index: 2;
+    border-radius: 0.75em;
+    position: absolute;
+    top: 45%;
+    left: 25%;
+    right: 75%;
+    bottom: 55%;
+    width: 50%;
+    height: 50px;
+    background: linear-gradient(to right, rgb(64, 0, 167), rgb(189, 0, 170));
+}
+
+#loadbar-outline {
+    background-color: rgb(80, 50, 100);
+    display: block;
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    right: calc(100% - 5px);
+    bottom: calc(100% - 5px);
+    height: calc(100% - 10px);
+    width: calc(100% - 10px);
+    border-radius: 0.5em;
+}
+
+#loadbar-progress {
+    z-index: inherit;
+    background: linear-gradient(to right, #5800E2, #FF00E6);
+    display: block;
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    right: calc(100% - 3px);
+    bottom: calc(100% - 3px);
+    height: calc(100% - 6px);
+    min-width: calc((100% - 6px)/55);
+    border-radius: 0.25em;
+}
+
+#loadbar-progress p {
+    margin-top: 9px;
+    text-align: center;
+    padding: 0 6px;
+    font-family: "Ken Vector Future Thin", "Courier New", Courier, monospace;
+    white-space: nowrap;
+    overflow: hidden;
 }

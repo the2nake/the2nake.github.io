@@ -1,3 +1,7 @@
+<!-- 
+   Credit not needed but is appreciated.
+   Thuong -->
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -6,19 +10,33 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Space Exploration Game by Lorem</title>
     <link rel="stylesheet" type="text/css" href="styles.css" />
-    <link rel="shortcut icon" href="images/Enemies/enemyBlack1.png" type="image/png" />
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
 </head>
 
 <body>
-    <h1>Space Exploration Game</h1>
-    <p>By Lorem Ipsum Von Ghuot</p>
+    <div id="screen-overflow">
+        <div id="loadbar-gradient">
+            <div id="loadbar-outline">
+                <div id="loadbar-progress">
+                    <p>Loading... </p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <header>
+        <h1 class="header">SPACE EXPLORATION GAME</h1>
+        <p class="header">By Lorem Ipsum Von Ghuot</p>
+    </header>
     <div id="canvasBackDiv">
     </div>
-    <h6>Kudos to Kenney at <a href="http://kenney.nl">kenney.nl</a>.</h6>
-    <script src="./classes.js"></script>
-    <script src="./keyboard.js"></script>
-    <script src="./levels.js"></script>
-    <script src="./main.js"></script>
+    <h6 class="footer">Kudos to Kenney at <a href="http://kenney.nl">kenney.nl</a> and MedicineStorm at <a
+            href="https://opengameart.org/users/medicinestorm">OpenGameArt.org</a></h6>
+    <audio src="audio/title-screen.ogg" id="music" loop></audio>
+    <script src="preload.js"></script>
+    <script src="classes.js"></script>
+    <script src="keyboard.js"></script>
+    <script src="levels.js"></script>
+    <script src="main.js"></script>
 </body>
 
 </html>
