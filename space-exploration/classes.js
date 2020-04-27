@@ -12,7 +12,7 @@ function handleCircleCollision(key1, obj1, key2, obj2) {
     r2 = obj2[key2].boxradius * obj2[key2].scale ** 2;
     if (Math.sqrt((x1 - x2) ** 2 + (y1 - y2) ** 2) <= r1 + r2) {
         // return true;
-        player.health -= 20;
+        player.health -= 10;
         // confirmed collision
         if (player.health <= 0) {
             losesound.play();
@@ -29,7 +29,7 @@ function handleCircleCollision(key1, obj1, key2, obj2) {
             obj2[key2].ctx.fillStyle = "white";
             obj2[key2].ctx.fillText("You Have Lost", obj2[key2].canvas.width / 2, obj2[key2].canvas.height / 2);
 
-            document.onclick = function() {
+            document.onclick = function () {
                 location.reload(false); // load from cache
             };
             var s = function () {
@@ -82,6 +82,8 @@ class Ship {
         this.turningRadius = 12 / this.speed;
         this.scale = canvas.width / (33 * this.width);
         this.reload = true;
+        this.dual = false;
+        this.firespeed = 250;
     }
     /**
      * Updates the object
@@ -125,12 +127,29 @@ class Ship {
      * @param {String} color The color of the bullet. Can be "Green", "Red", or "Blue"
      */
     shoot(bullets, enemies, player, color) {
-        let x = Math.random(); // any key is fine, but the keys must stay constant, so use object with random keys. 
-        // You need 5 * 10 ^ 15 entities for that to overlap
-        if (color === "Red") {
-            bullets[x] = new Bullet(color, this.x, this.y, (this.deg + 180) % 360, this.canvas, bullets, enemies, player, x);
+        if (this.dual) {
+            let x = Math.random(); // any key is fine, but the keys must stay constant, so use object with random keys. 
+            // You need 5 * 10 ^ 15 entities for that to overlap
+            if (color === "Red") {
+                bullets[x] = new Bullet(color, this.x + 10 * Math.cos(Math.PI / 180 * ((this.deg + 180) % 180)), this.y + 10 * Math.sin((this.deg + 180) % 180), (this.deg + 180) % 360, this.canvas, bullets, enemies, player, x);
+            } else {
+                bullets[x] = new Bullet(color, this.x + 10 * Math.cos(Math.PI / 180 * this.deg), this.y + 10 * Math.sin(Math.PI / 180 * this.deg), this.deg, this.canvas, bullets, enemies, player, x);
+            }
+            x = Math.random(); // any key is fine, but the keys must stay constant, so use object with random keys. 
+            // You need 5 * 10 ^ 15 entities for that to overlap
+            if (color === "Red") {
+                bullets[x] = new Bullet(color, this.x - 10 * Math.cos(Math.PI / 180 * ((this.deg + 180) % 180)), this.y - 10 * Math.sin((this.deg + 180) % 180), (this.deg + 180) % 360, this.canvas, bullets, enemies, player, x);
+            } else {
+                bullets[x] = new Bullet(color, this.x - 10 * Math.cos(Math.PI / 180 * this.deg), this.y - 10 * Math.sin(Math.PI / 180 * this.deg), this.deg, this.canvas, bullets, enemies, player, x);
+            }
         } else {
-            bullets[x] = new Bullet(color, this.x, this.y, this.deg, this.canvas, bullets, enemies, player, x);
+            let x = Math.random(); // any key is fine, but the keys must stay constant, so use object with random keys. 
+            // You need 5 * 10 ^ 15 entities for that to overlap
+            if (color === "Red") {
+                bullets[x] = new Bullet(color, this.x, this.y, (this.deg + 180) % 360, this.canvas, bullets, enemies, player, x);
+            } else {
+                bullets[x] = new Bullet(color, this.x, this.y, this.deg, this.canvas, bullets, enemies, player, x);
+            }
         }
     }
 
@@ -178,11 +197,12 @@ class Player extends Ship {
         this.agility = 0.3;
         this.speed = 5;
         this.health = 100;
+        this.dual = false;
         this.level = 1;
     }
     update() {
         super.update();
-        this.health += 0.02;
+        this.health += 0.05;
         if (this.health > 100) {
             this.health = 100;
         }
@@ -200,11 +220,19 @@ class Player extends Ship {
         }
         if (map[" "] && this.reload === true) {
             this.reload = false;
+            this.deg = (this.deg + 10) % 360;
             this.shoot(this.bullets, this.enemies, this, "Blue");
+
+            this.deg = (this.deg - 20) % 360;
+            this.shoot(this.bullets, this.enemies, this, "Blue");
+
+            this.deg = (this.deg + 10) % 360;
+            this.shoot(this.bullets, this.enemies, this, "Green");
+            
             var me = this;
             window.setTimeout(function () {
                 me.reload = true;
-            }, 500);
+            }, this.firespeed);
         }
     }
 }
@@ -218,31 +246,72 @@ class Enemy extends Ship {
      */
     constructor(sx, sy, canvas, bullets, enemies, player, mykey) {
         super(sx, sy, canvas);
-        switch (Math.floor(Math.random() * 5) + 1) {
+        switch (Math.floor(Math.random() * 10) + 1) {
             case 1:
                 this.image = resources["images/Enemies/enemyRed1.png"];
                 this.width = 93;
                 this.speed = 4;
+                this.dual = true;
+                this.firespeed = 750;
                 break;
             case 2:
                 this.image = resources["images/Enemies/enemyRed2.png"];
                 this.width = 104;
                 this.speed = 3;
+                this.dual = true;
+                this.firespeed = 500;
                 break;
             case 3:
                 this.image = resources["images/Enemies/enemyRed3.png"];
                 this.width = 103;
                 this.speed = 3;
+                this.firespeed = 100;
                 break;
             case 4:
                 this.image = resources["images/Enemies/enemyRed4.png"];
                 this.width = 82;
                 this.speed = 1;
+                this.dual = true;
+                this.firespeed = 250;
                 break;
             case 5:
                 this.image = resources["images/Enemies/enemyRed5.png"];
                 this.width = 97;
                 this.speed = 2;
+                this.firespeed = 750;
+                break;
+            case 6:
+                this.image = resources["images/Enemies/enemyRed3.png"];
+                this.width = 103;
+                this.speed = 3;
+                this.firespeed = 100;
+                break;
+            case 7:
+                this.image = resources["images/Enemies/enemyRed5.png"];
+                this.width = 97;
+                this.speed = 2;
+                this.firespeed = 750;
+                break;
+            case 8:
+                this.image = resources["images/Enemies/enemyRed1.png"];
+                this.width = 93;
+                this.speed = 4;
+                this.dual = true;
+                this.firespeed = 750;
+                break;
+            case 9:
+                this.image = resources["images/Enemies/enemyRed2.png"];
+                this.width = 104;
+                this.speed = 3;
+                this.dual = true;
+                this.firespeed = 500;
+                break;
+            case 10:
+                this.image = resources["images/Enemies/enemyRed1.png"];
+                this.width = 93;
+                this.speed = 4;
+                this.dual = true;
+                this.firespeed = 750;
                 break;
         }
         this.height = 84;
@@ -336,7 +405,7 @@ class Enemy extends Ship {
             me = this;
             window.setTimeout(function () {
                 me.reload = true;
-            }, 2000);
+            }, this.firespeed);
         }
     }
 }
@@ -389,19 +458,6 @@ class Bullet {
 
             this.x += this.dx;
             this.y += this.dy;
-
-            if (this.x >= 1000) {
-                this.x = 0;
-            }
-            if (this.x < 0) {
-                this.x = 1000;
-            }
-            if (this.y >= 562.5) {
-                this.y = 0;
-            }
-            if (this.y < 0) {
-                this.y = 562.5;
-            }
         }
         if (this.color === "Green" || this.color === "Blue") {
             for (let i = 0; i < Object.keys(this.enemies).length; i++) {
@@ -426,7 +482,7 @@ class Bullet {
             }); // surgical strikes
         }
 
-        if (this.ticks > 100) {
+        if ((this.ticks > 100 && this.color == "Red") || (this.ticks > 200 && this.color != "Red")) {
             delete this.bullets[this.mykey];
         }
     }
