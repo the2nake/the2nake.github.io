@@ -1,5 +1,15 @@
 // Credit not needed but is appreciated.
-// classes.js by    Thuong
+// classes.js by Thuong
+
+var killsound, lasersound, losesound;
+
+function createSounds() {
+    lasersound = resources["audio/sfx_laser2.ogg"];
+
+    killsound = resources["audio/sfx_twoTone.ogg"];
+
+    losesound = resources["audio/sfx_lose.ogg"];
+}
 
 function handleCircleCollision(key1, obj1, key2, obj2) {
     // comparision is ALWWAYS bullet is 1, player is 2
@@ -12,37 +22,34 @@ function handleCircleCollision(key1, obj1, key2, obj2) {
     r2 = obj2[key2].boxradius * obj2[key2].scale ** 2;
     if (Math.sqrt((x1 - x2) ** 2 + (y1 - y2) ** 2) <= r1 + r2) {
         // return true;
-        player.health -= 10;
+        obj2[key2].health -= 10;
+        obj2[key2].healspeed = 0;
         // confirmed collision
         if (player.health <= 0) {
             losesound.play();
             musicEl.src = "audio/defeat.ogg";
             musicEl.loop = false;
             musicEl.play();
-            console.log("We have a loser!");
+            console.info("We have a loser!");
             var temp = obj2[key2];
-            var finalscore = obj2[key2].score;
-            obj2[key2].ctx.fillStyle = "black";
-            obj2[key2].ctx.fillRect(0, 0, obj2[key2].canvas.width, obj2[key2].canvas.height);
-            obj2[key2].ctx.font = "28px Ken Vector Future";
-            obj2[key2].ctx.textAlign = "center";
-            obj2[key2].ctx.fillStyle = "white";
-            obj2[key2].ctx.fillText("You Have Lost", obj2[key2].canvas.width / 2, obj2[key2].canvas.height / 2);
+            var finalscore = temp.score;
+            temp.ctx.fillStyle = "black";
+            temp.ctx.fillRect(0, 0, temp.canvas.width, temp.canvas.height);
 
             document.onclick = function () {
                 location.reload(false); // load from cache
             };
             var s = function () {
                 temp.ctx.fillStyle = "black";
-                temp.ctx.fillRect(0, 0, obj2[key2].canvas.width, obj2[key2].canvas.height);
+                temp.ctx.fillRect(0, 0, temp.canvas.width, temp.canvas.height);
                 temp.ctx.font = "48px Ken Vector Future";
                 temp.ctx.textAlign = "center";
                 temp.ctx.fillStyle = "red";
-                temp.ctx.fillText("You Have Lost", obj2[key2].canvas.width / 2, obj2[key2].canvas.height / 2 - 32);
+                temp.ctx.fillText("You Have Lost", temp.canvas.width / 2, temp.canvas.height / 2 - 32);
                 temp.ctx.font = "32px Ken Vector Future Thin";
                 temp.ctx.fillStyle = "white";
-                temp.ctx.fillText("Your final score was: " + finalscore, obj2[key2].canvas.width / 2, obj2[key2].canvas.height / 2);
-                temp.ctx.fillText("Click to Restart", obj2[key2].canvas.width / 2, obj2[key2].canvas.height / 2 + 32);
+                temp.ctx.fillText("Your final score was: " + finalscore, temp.canvas.width / 2, temp.canvas.height / 2);
+                temp.ctx.fillText("Click to Restart", temp.canvas.width / 2, temp.canvas.height / 2 + 32);
                 window.cancelAnimationFrame(mainhdl);
                 window.clearInterval(UIhdl);
                 window.requestAnimationFrame(s);
@@ -198,14 +205,19 @@ class Player extends Ship {
         this.speed = 5;
         this.health = 100;
         this.dual = false;
-        this.level = 1;
+        this.healspeed = 0.2;
     }
     update() {
         super.update();
-        this.health += 0.05;
+        if (this.healspeed < 0.2) {
+            this.healspeed += 0.001;
+        }
+
+        this.health += this.healspeed;
         if (this.health > 100) {
             this.health = 100;
         }
+
         this.keys();
     }
     keys() {
@@ -228,7 +240,7 @@ class Player extends Ship {
 
             this.deg = (this.deg + 10) % 360;
             this.shoot(this.bullets, this.enemies, this, "Green");
-            
+
             var me = this;
             window.setTimeout(function () {
                 me.reload = true;
@@ -244,9 +256,45 @@ class Enemy extends Ship {
      * @param sy Starting y position
      * @param canvas The canvas element
      */
-    constructor(sx, sy, canvas, bullets, enemies, player, mykey) {
+    constructor(sx, sy, canvas, bullets, enemies, player, mykey, isCampaign = false, type = 0) {
         super(sx, sy, canvas);
-        switch (Math.floor(Math.random() * 10) + 1) {
+        if (isCampaign) {
+            this.type = type;
+        } else {
+            switch (Math.floor(Math.random() * 10) + 1) {
+                case 1:
+                    this.type = 1;
+                    break;
+                case 2:
+                    this.type = 1;
+                    break;
+                case 3:
+                    this.type = 1;
+                    break;
+                case 4:
+                    this.type = 2;
+                    break;
+                case 5:
+                    this.type = 2;
+                    break;
+                case 6:
+                    this.type = 3;
+                    break;
+                case 7:
+                    this.type = 3;
+                    break;
+                case 8:
+                    this.type = 4;
+                    break;
+                case 9:
+                    this.type = 5;
+                    break;
+                case 10:
+                    this.type = 5;
+                    break;
+            }
+        }
+        switch (this.type) {
             case 1:
                 this.image = resources["images/Enemies/enemyRed1.png"];
                 this.width = 93;
@@ -280,33 +328,7 @@ class Enemy extends Ship {
                 this.speed = 2;
                 this.firespeed = 750;
                 break;
-            case 6:
-                this.image = resources["images/Enemies/enemyRed3.png"];
-                this.width = 103;
-                this.speed = 3;
-                this.firespeed = 100;
-                break;
-            case 7:
-                this.image = resources["images/Enemies/enemyRed5.png"];
-                this.width = 97;
-                this.speed = 2;
-                this.firespeed = 750;
-                break;
-            case 8:
-                this.image = resources["images/Enemies/enemyRed1.png"];
-                this.width = 93;
-                this.speed = 4;
-                this.dual = true;
-                this.firespeed = 750;
-                break;
-            case 9:
-                this.image = resources["images/Enemies/enemyRed2.png"];
-                this.width = 104;
-                this.speed = 3;
-                this.dual = true;
-                this.firespeed = 500;
-                break;
-            case 10:
+            default:
                 this.image = resources["images/Enemies/enemyRed1.png"];
                 this.width = 93;
                 this.speed = 4;
@@ -314,6 +336,7 @@ class Enemy extends Ship {
                 this.firespeed = 750;
                 break;
         }
+
         this.height = 84;
         this.circleRadius = Math.random() * 50;
         this.circleMovement = Math.random() * 2;
@@ -323,6 +346,13 @@ class Enemy extends Ship {
         this.enemies = enemies;
         this.mykey = mykey;
         this.player = player;
+        this.active = false;
+
+        var me = this;
+
+        window.setTimeout(function () {
+            me.active = true;
+        }, this.type * 1000);
     }
     /**
      * Updates the enemy
@@ -338,21 +368,22 @@ class Enemy extends Ship {
     track() {
         this.diffx = this.x - player.x;
         this.diffy = this.y - player.y;
-        this.targetAngle = 180 + (180 * Math.atan2(this.diffy, this.diffx) / Math.PI + 270) % 360;
+        let randArr = [1, -1];
+        this.targetAngle = 180 + (180 * Math.atan2(this.diffy, this.diffx) / Math.PI + 270) % 360 + 5 * Math.random() * randArr[Math.floor(Math.random() * 2)];
 
-        if (Math.abs(this.deg - this.targetAngle) < 10) {
+        if (Math.abs(this.deg - this.targetAngle) < 20) {
             this.deg = this.targetAngle;
-        } else if (Math.abs(this.deg - this.targetAngle) > 350) {
+        } else if (Math.abs(this.deg - this.targetAngle) > 340) {
             this.deg = this.targetAngle;
         }
 
-        if (Math.abs((this.deg - 1) - this.targetAngle) % 360 < Math.abs(this.deg - this.targetAngle) % 360) {
+        if (Math.abs((this.deg + this.turningRadius) - this.targetAngle) % 360 < Math.abs(this.deg - this.targetAngle) % 360) {
             /**
              * If it gets you closer, do it
              */
-            this.left();
-        } else {
             this.right();
+        } else {
+            this.left();
         }
 
         let i = 0;
@@ -378,16 +409,25 @@ class Enemy extends Ship {
             i++; // safety of CPU protection :)
         }
 
-        if ((this.diffx ** 2 + this.diffy ** 2) ** (1 / 2) >= 100 + this.circleRadius) {
+        if (100 + this.circleRadius <= (this.diffx ** 2 + this.diffy ** 2) ** (1 / 2) && this.active) {
             if (Math.sqrt(this.dx * this.dx + this.dy * this.dy) < this.speed) {
-                if (!isNaN(0.05 * Math.cos(this.rad))) {
+                if (!isNaN(this.rad)) {
                     this.dx += -0.05 * Math.cos(this.rad);
-                }
-                if (!isNaN(0.05 * Math.sin(this.rad))) {
                     this.dy += -0.05 * Math.sin(this.rad);
                 }
             }
         }
+
+        if ((this.diffx ** 2 + this.diffy ** 2) ** (1 / 2) <= 400) {
+            this.active = true;
+        }
+
+        if (!this.active) {
+            this.dx = 0;
+            this.dy = 0;
+        }
+
+
         if (100 + this.circleRadius - 2 < (this.diffx ** 2 + this.diffy ** 2) ** (1 / 2) < 100 + this.circleRadius + 2) {
             // in a circle orbit
             if (!this.circling) {
@@ -399,7 +439,7 @@ class Enemy extends Ship {
             this.circling = false;
         }
         var me;
-        if (this.reload === true) {
+        if (this.reload && this.active) {
             this.reload = false;
             this.shoot(this.bullets, this.enemies, this.player, "Red");
             me = this;
@@ -488,20 +528,6 @@ class Bullet {
     }
 }
 
-var killsound, lasersound, losesound;
-
-function createSounds() {
-    lasersound = resources["audio/sfx_laser2.ogg"];
-
-    killsound = resources["audio/sfx_twoTone.ogg"];
-
-    losesound = resources["audio/sfx_lose.ogg"];
-}
-
-class UI {
-
-}
-
 class HUD {
     constructor(context) {
         /** @type {CanvasRenderingContext2D} */
@@ -517,7 +543,6 @@ class HUD {
     display() {
         this.displayScore(player.score);
         this.displayHealth(player.health);
-        this.displayMuteButton();
         if (this.mode) {
             // campaign
             this.displayLevel(player.level);
@@ -548,13 +573,10 @@ class HUD {
 
         c.fillRect(12, 12, health * 5 * canvas.width / coordwidth - 4, 20 * canvas.height / coordheight - 4);
     }
-    displayMuteButton() {
-
-    }
     displayLevel(level) {
         this.levelArr = (level + "").split("");
         for (let i = 0; i < this.levelArr.length; i++) {
-            this.c.drawImage(this.numImgList[this.levelArr[i]], canvas.width - 19 * (this.levelArr.length - i) - 10, 36);
+            this.c.drawImage(this.numImgList[this.levelArr[i]], player.canvas.width - 19 * (this.levelArr.length - i) - 10, 36);
         }
         this.c.strokeStyle = "grey";
         this.c.fillStyle = "white";

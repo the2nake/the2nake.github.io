@@ -1,5 +1,6 @@
 // Credit not needed but is appreciated.
 // main.js by Thuong
+// https://github.com/the2nake/space-exploration
 
 var canvas, coordheight, coordwidth, enemies, bullets, player, mainhdl, HUDobj, mute, endlessb, campaignb, muteb, img, initialhdl, campaign, endless, c, musicEl, ticks, UIhdl;
 ticks = 0;
@@ -14,7 +15,8 @@ function main() {
     }
     if (resources_loaded == total_resources_needed && ticks >= 100) {
         createSounds();
-        console.log("Hell, ya");
+        let time = new Date();
+        console.info("Game started at " + time.getHours() + ":" + time.getMinutes() + ":" + time.getSeconds() + " on " + time.getDate() + "/" + (time.getMonth() + 1) + "/" + time.getFullYear());
         document.getElementById("screen-overflow").style.display = "none";
         document.getElementById("loadbar-gradient").style.display = "none";
         document.getElementById("loadbar-outline").style.display = "none";
@@ -40,6 +42,14 @@ function main() {
         HUDobj = new HUD(c);
         mute = true;
         endless = function () {
+            // endless only
+
+            if (Math.floor(Math.random() * 300) == 1) {
+                var x = Math.random();
+                enemies[x] = new Enemy(Math.random() * coordwidth, Math.random() * coordheight, canvas, bullets, enemies, player, x, false, 0);
+            }
+
+            // shared
             // draw background
             c.clearRect(0, 0, canvas.width, canvas.height);
             c.drawImage(resources["images/background.jpg"], 0, 0, canvas.width, canvas.height);
@@ -57,11 +67,6 @@ function main() {
                 enemies[Object.keys(enemies)[i]].update();
             }
             player.update();
-
-            if (Math.floor(Math.random() * 300) == 1) {
-                var x = Math.random();
-                enemies[x] = (new Enemy(Math.random() * coordwidth, Math.random() * coordheight, canvas, bullets, enemies, player, x));
-            }
             // HUD
             c.fillStyle = "#ff8b26";
             c.strokeStyle = "#ff005d";
@@ -72,7 +77,18 @@ function main() {
             // recursively call the next frame
             mainhdl = requestAnimationFrame(endless);
         };
-        campaign = function () {
+        campaign = function (level = 0) {
+            // campaign-only
+            if (0 < level) { // spawn
+                player = new Player(levels[level].playerx, levels[level].playery, canvas, bullets, enemies);
+                player.level = level;
+                for (let i = 0; i < Object.keys(levels[level].enemies).length / 3; i++) {
+                    let temp = levels[level].enemies;
+                    let x = Math.random();
+                    enemies[x] = new Enemy(temp["x" + i], temp["y" + i], canvas, bullets, enemies, player, x, true, temp["type" + i]);
+                }
+            }
+            // shared
             // draw background
             c.clearRect(0, 0, canvas.width, canvas.height);
             c.drawImage(resources["images/background.jpg"], 0, 0, canvas.width, canvas.height);
@@ -83,10 +99,6 @@ function main() {
                 enemies[Object.keys(enemies)[i]].update();
             }
             player.update();
-            if (Math.floor(Math.random() * 300) == 1) {
-                var x = Math.random();
-                enemies[x] = (new Enemy(Math.random() * coordwidth, Math.random() * coordheight, canvas, bullets, enemies, player, x));
-            }
             // HUD
             c.fillStyle = "#ff8b26";
             c.strokeStyle = "#ff005d";
@@ -95,7 +107,44 @@ function main() {
             c.fillRect(10, 10, player.health * 5 * canvas.width / coordwidth, 20 * canvas.height / coordheight);
             HUDobj.display();
             // recursively call the next frame
-            mainhdl = requestAnimationFrame(campaign);
+            if (Object.keys(enemies).length <= 0) {
+                if (levels[player.level + 1]) {
+                    mainhdl = requestAnimationFrame(function () {
+                        campaign(player.level + 1);
+                    });
+                } else {
+                    musicEl.src = "audio/victory-tune.ogg";
+                    musicEl.loop = false;
+                    musicEl.play();
+                    console.info("We have a winner!");
+                    var temp = player;
+                    temp.ctx.fillStyle = "black";
+                    temp.ctx.fillRect(0, 0, canvas.width, canvas.height);
+                    window.setTimeout(function () {
+                        document.onclick = function () {
+                            location.replace("https://github.com/the2nake/space-exploration"); // load from cache
+                        };
+                    }, 3000);
+                    var s = function () {
+                        temp.ctx.fillStyle = "black";
+                        temp.ctx.fillRect(0, 0, canvas.width, canvas.height);
+                        temp.ctx.font = "48px Ken Vector Future";
+                        temp.ctx.textAlign = "center";
+                        temp.ctx.fillStyle = "white";
+                        temp.ctx.fillText("You Have Won", canvas.width / 2, canvas.height / 2 - 32);
+                        temp.ctx.font = "32px Ken Vector Future Thin";
+                        temp.ctx.fillStyle = "white";
+                        temp.ctx.fillText("Thank you for playing!", canvas.width / 2, canvas.height / 2);
+                        temp.ctx.fillText("Fork me on Github!", canvas.width / 2, canvas.height / 2 + 32);
+                        window.cancelAnimationFrame(mainhdl);
+                        window.clearInterval(UIhdl);
+                        window.requestAnimationFrame(s);
+                    };
+                    s();
+                }
+            } else {
+                mainhdl = requestAnimationFrame(function(){ campaign(0); });
+            }
         };
         let canvasRect = canvas.getBoundingClientRect();
         endlessb = resources["images/UI/endless.png"];
@@ -136,9 +185,8 @@ function main() {
             endlessb.style.display = "none";
             campaignb.style.display = "none";
             HUDobj.mode = true; // campaign mode
-            player = new Player(coordwidth / 2, coordheight / 2, canvas, bullets, enemies);
             window.cancelAnimationFrame(intialhdl);
-            campaign();
+            campaign(1);
         });
         muteb.addEventListener("click", function () {
             if (mute) {
