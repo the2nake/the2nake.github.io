@@ -352,7 +352,7 @@ class Enemy extends Ship {
 
         window.setTimeout(function () {
             me.active = true;
-        }, this.type * 1000);
+        }, (this.type + Math.random()) * 3000);
     }
     /**
      * Updates the enemy
