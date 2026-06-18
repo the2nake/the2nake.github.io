@@ -1,0 +1,20 @@
+---
+import IndexLayout from '@/layouts/IndexLayout.astro'
+import { themeConfig } from '@/config'
+import { getEntry } from 'astro:content'
+import { render } from 'astro:content'
+
+const featuredEntry = await getEntry('about', 'featured')
+const hasContent = featuredEntry?.body ? featuredEntry.body.replace(/<!--[\s\S]*?-->/g, '').trim().length > 0 : false
+const { Content } = hasContent && featuredEntry ? await render(featuredEntry) : { Content: null }
+---
+
+<IndexLayout title={themeConfig.site.title} description={themeConfig.site.description}>
+  {
+    Content && (
+      <div class="about prose">
+        <Content />
+      </div>
+    )
+  }
+</IndexLayout>
