@@ -1,4 +1,5 @@
 import { defineConfig } from 'astro/config'
+import { unified } from '@astrojs/markdown-remark'
 import mdx from '@astrojs/mdx'
 import sitemap from '@astrojs/sitemap'
 import remarkMath from 'remark-math'
@@ -28,15 +29,17 @@ export default defineConfig({
       theme: 'css-variables',
       wrap: false
     },
-    remarkPlugins: [
-      remarkMath,
-      remarkDirective,
-      remarkEmbeddedMedia,
-      remarkContentFeatures,
-      remarkReadingTime,
-      remarkTOC
-    ],
-    rehypePlugins: [rehypeKatex, rehypeCleanup, rehypeImageProcessor, rehypeCopyCode]
+    processor: unified({
+      remarkPlugins: [
+        remarkMath,
+        remarkDirective,
+        remarkEmbeddedMedia,
+        remarkContentFeatures,
+        remarkReadingTime,
+        remarkTOC
+      ],
+      rehypePlugins: [rehypeKatex, rehypeCleanup, rehypeImageProcessor, rehypeCopyCode]
+    })
   },
   integrations: [mdx(), sitemap()],
   vite: {
