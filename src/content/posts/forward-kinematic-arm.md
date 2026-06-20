@@ -59,7 +59,29 @@ Putting together this arm was fairly simple, since I was always making sure that
 
 ## interfacing with the sensors
 
+Using PlatformIO, I set up some simple code to grab an analog input from each potentiometer and relay them via the serial connection to my computer. Because the Leonardo MCU has a 10-bit ADC, the 270-degree range of the potentiometer is divided into a resolution of $270 / 2^{10} \approx \boxed{\pm 0.3}$ degrees. This is just not precise enough; converting to radians and then multiplying by the length of a single link (~300 mm), a single joint would introduce an uncertainty of $\pm 1.57$ mm.
+
+I solved this by oversampling. An extra bit of precision is produced by sampling from the ADC 4 times and then dividing by 2 (having twice as many samples counteracts noise). Doing this 3 times, each potentiometer gets a resolution of $\pm 0.04$ degrees, which is definitely better despite increased accuracy not being guaranteed.
+
+```cpp
+long oversample(int pin, int bits) {
+  long sum = 0;
+  for (int i = 0; i < int(pow(4, bits)); ++i) {
+    sum += analogRead(pin);
+  }
+  return (sum >> bits);
+}
+```
+
 ## forward kinematics
+
+Once I had gotten some simple Python code to read the received sensor measurements written, the next step was to figure out the equations for the endpoint coordinates. The trigonometry to perform forward kinematics is very simple, but I decided to expand my horizons a bit and learn the more standard approach of using homogeneous transformation matrices.
+
+The most popular variant of this is the Denavit-Hartenberg convention, which rigidly attaches a coordinate frame to each link of the robot arm and represents the transformations between them using two successive screw transforms: one in the Z (joint) axis and one in the X axis. Using [this pdf](https://users.cs.duke.edu/~brd/Teaching/Bio/asmb/current/Papers/chap3-forward-kinematics.pdf) as a reference, I made the following mockup of the coordinate frames.
+
+![Assigning the reference frames to each link. The orientation of the base link requires a +90 degree offset to be added to the first Z screw displacement.](./_assets/forward-kinematic-arm/reference_frames.png)
+
+Here's something I found quite interesting when figuring out how the transformation matrices are used: the multiplications are performed left-to-right. I'm used to seeing transforms like $AB\bf{x}$, for example, where B is applied first. However, to use homogeneous transformations, you need to chain them like so $H_0H_1H_2\cdots$. The last column of $H_n$ has x-y-z entries that translate by the first three columns of $H_{n-1}$ (the orientation of the previous frame), and then the fourth "1" entry adds it to $H_{n-1}$'s origin coordinate.
 
 ## automatic calibration
 
@@ -71,7 +93,7 @@ Putting together this arm was fairly simple, since I was always making sure that
 
 ## reflections
 
-If I were to do something like this again, I would primarily focus on improving the mechanical reliability. For example, to reduce play in the coaxial direction of the joints, I would make each joint wider, with disc-like contact areas instead of being pivots on a fixed screw. I would also change the mounting of the rotating platform, either adding compression or using four bearing stacks to prevent the large torque from the arm's weight from loosening the clamp on the potentiometer over time.
+If I were to do something like this again, I would primarily focus on improving the mechanical reliability. For example, to reduce play in the coaxial direction of the joints, I would make each joint wider, with disc-like contact areas instead of being pivots on a fixed screw. I would also change the mounting of the rotating platform, either adding compression or using bearing stacks to retain the turret and prevent the arm's weight from loosening the clamp on the potentiometer over time.
 
 Swapping out the potentiometers for Hall effect sensors would also be a good idea, since it would provide greater resolution and stronger linearity. It helps to clarify if the small errors I saw were caused by measurement error when collecting calibration data or by poor metaheuristic tuning.
 
