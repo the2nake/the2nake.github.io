@@ -3,7 +3,7 @@ title: "Forward Kinematic Arm"
 pubDate: "2026-06-18"
 ---
 
-One of the conceptually simplest ways to teach a robot to act intelligently is to have it mimic human input. However, a good "expert" dataset can only be obtained if the human can control the device as if it were an extension of their own body. To eventually teach a robot arm to automate some simple physical tasks, I decided to create this "forward kinematic arm" as a sort of 3D mouse that would track my movements as a list of coordinates over time.
+One of the conceptually simplest ways to teach a robot to act intelligently is to have it mimic human input. However, a good "expert" dataset can only be obtained if the human can control the device as if it were an extension of their own body. To eventually teach a robot arm to automate some simple physical tasks, I decided to create this "forward kinematic arm" as a sort of 3D mouse that tracks my movements and generates a training dataset of me doing various tasks.
 
 ![An image of the current working prototype](./_assets/forward-kinematic-arm/testing_setup.jpg)
 
