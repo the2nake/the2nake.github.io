@@ -145,7 +145,7 @@ Here are a couple more interesting things about this method (in no particular or
 - Gravity decays over time. This seems to help with making smaller adjustments as the points get closer to the true optimum
 - A small constant distance is added when computing gravitation to prevent acceleration from blowing up
 - Impacts from the scale of the fitness function are mitigated using the mass formula below, and then normalising the masses to sum to 1 across all points.
-  - $m_i(t)=\dfrac{f_{worst}(t)-f(X^i)}{f_{worst}(t)-f_{best}(t)}$
+  - $m_i(t)=\dfrac{f_{worst}(t)-f(X_i(t))}{f_{worst}(t)-f_{best}(t)}$
   - *However*, I obtained better results without normalising the masses
   - Also, since the denominator is constant, it doesn't make sense to divide it if later the sum of all the masses is going to be normalised to 1 (I tested that the numerical result is identical). Perhaps the authors overlooked this?
 - Force is inversely proportional, not inversely quadratic, to distance. I suspect this improves the speed of optimisation. 
