@@ -112,6 +112,7 @@
   height: auto;
   display: block;
   margin: 2em 0;
+  border: 1px solid var(--border);
 }
 
 .img-placeholder {
