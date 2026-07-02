@@ -11,7 +11,7 @@ One of the conceptually simplest ways to teach a robot to act intelligently is t
 
 The arm is an unpowered linkage with three potentiometers placed at each location where joints can rotate. There is one in the base, one on the rotating platform/turret, and one placed at the "elbow". When the link lengths are known, trigonometry can be used to compute the position of the arm's tip relative to its base. Then, assigning a coordinate frame to the base allows measurements to be made.
 
-I also added an automatic calibration system, with which the arm can precisely estimate its own parameters (relative position, link lengths, and other coefficients) when given some points of reference. This was done by employing the gravitational search metaheuristic described in [this paper](https://pmc.ncbi.nlm.nih.gov/articles/PMC10304751/#B13-sensors-23-05368).
+I also added an automatic calibration system, with which the arm can precisely estimate its own parameters (relative position, link lengths, and other coefficients) when given some points of reference. This was done by employing the gravitational search metaheuristic described in <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC10304751/#B13-sensors-23-05368" target="_blank" rel="noopener noreferrer">this paper</a>.
 
 ---
 
@@ -19,11 +19,11 @@ I also added an automatic calibration system, with which the arm can precisely e
 
 In general, I mostly used cheap and readily available components from Amazon. I used an Arduino Leonardo to interface between my laptop and the sensors. Consulting with my professor, I also learned to pick out some useful hardware like thrust bearings (to support the turret) and MakerBeam extrusions (allowing more rigidity than a fully 3D printed design). Here's a rough parts list:
 
-- [Potentiometers](https://a.co/d/00tr50I6)
-- [Thrust bearings](https://a.co/d/07Qh6RBU)
-- [Flanged ball bearings](https://a.co/d/0cTVoxgD)
-- [T-slot extrusion (600 x 10 x 10)](https://a.co/d/0i9hzxDB)
-- [3-pin cable extension](https://a.co/d/07lWsfC2)
+- <a href="https://a.co/d/00tr50I6" target="_blank" rel="noopener noreferrer">Potentiometers</a>
+- <a href="https://a.co/d/07Qh6RBU" target="_blank" rel="noopener noreferrer">Thrust bearings</a>
+- <a href="https://a.co/d/0cTVoxgD" target="_blank" rel="noopener noreferrer">Flanged ball bearings</a>
+- <a href="https://a.co/d/0i9hzxDB" target="_blank" rel="noopener noreferrer">T-slot extrusion (600 x 10 x 10)</a>
+- <a href="https://a.co/d/07lWsfC2" target="_blank" rel="noopener noreferrer">3-pin cable extension</a>
 
 ## designing the arm
 
@@ -81,7 +81,7 @@ long oversample(int pin, int bits) {
 
 Once I had gotten some simple Python code to read the received sensor measurements written, the next step was to figure out the equations for the endpoint coordinates. The trigonometry to perform forward kinematics is very simple, but I decided to expand my horizons a bit and learn the more standard approach of using homogeneous transformation matrices.
 
-The most popular variant of this is the Denavit-Hartenberg convention, which rigidly attaches a coordinate frame to each link of the robot arm and represents the transformations between them using two successive screw transforms: one in the Z (joint) axis and one in the X axis. Using [this pdf](https://users.cs.duke.edu/~brd/Teaching/Bio/asmb/current/Papers/chap3-forward-kinematics.pdf) as a reference, I made the following mockup of the coordinate frame
+The most popular variant of this is the Denavit-Hartenberg convention, which rigidly attaches a coordinate frame to each link of the robot arm and represents the transformations between them using two successive screw transforms: one in the Z (joint) axis and one in the X axis. Using <a href="https://users.cs.duke.edu/~brd/Teaching/Bio/asmb/current/Papers/chap3-forward-kinematics.pdf" target="_blank" rel="noopener noreferrer">this pdf</a> as a reference, I made the following mockup of the coordinate frame
 
 ![Assigning the reference frames to each link. The orientation of the base link requires a +90 degree offset to be added to the first Z screw displacement.](./_assets/forward-kinematic-arm/reference_frames.png)
 
@@ -127,7 +127,7 @@ At a high level, the strategy is to use the MAE vector from some known calibrati
 
 ## gravitational search
 
-After some research, I found my way to [a paper on precision calibration of industrial robot arms](https://pmc.ncbi.nlm.nih.gov/articles/PMC10304751/#B13-sensors-23-05368). I chose to implement the gravitational search algorithm (GSA), which had the second-best experimental result, as I found that the artificial bee colony approach lacked sufficient detail for me to replicate and only performed slightly better.
+After some research, I found my way to <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC10304751/#B13-sensors-23-05368" target="_blank" rel="noopener noreferrer">a paper on precision calibration of industrial robot arms</a>. I chose to implement the gravitational search algorithm (GSA), which had the second-best experimental result, as I found that the artificial bee colony approach lacked sufficient detail for me to replicate and only performed slightly better.
 
 Side note: This algorithm is *super cool*, and also *super intuitive*. Basically, if you spray a bunch of random points over the configuration space (vector space of all configuration vectors) near the true optimal, you can iteratively gravitate all the points towards the heaviest (best fitness) ones, and the paths that they trace to get to that true optimal can contain even better configurations that become the new "center of gravity".
 
